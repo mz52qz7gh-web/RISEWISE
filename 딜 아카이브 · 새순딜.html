@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<!-- saved from url=(0094)file:///C:/Users/linek/Downloads/%EB%94%9C%EC%95%84%EC%B9%B4%EC%9D%B4%EB%B8%8C_supabase_3.html -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>딜 아카이브 · 새순딜</title>
+<style>
+  :root{
+    --bg: #16171a;
+    --card: #1d1f23;
+    --card-hover: #24262b;
+    --border: #2c2e33;
+    --text: #e9e9ea;
+    --text-dim: #9a9ba0;
+    --text-faint: #6c6d72;
+    --green: #3ecf7e;
+    --red: #e5555a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    padding:48px 20px 80px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  .breadcrumb{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--text-dim);margin-bottom:28px;}
+  .breadcrumb .current{color:var(--text);}
+  .admin-toggle{background:transparent;border:1px solid var(--border);color:var(--text-faint);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer;}
+  .admin-toggle:hover{border-color:var(--green);color:var(--green);}
+  .admin-toggle.on{border-color:var(--green);color:var(--green);}
+
+  h1{text-align:center;font-size:28px;font-weight:700;margin:0 0 10px;}
+  .subtitle{text-align:center;color:var(--text-dim);font-size:14px;margin-bottom:28px;}
+
+  .login-panel{
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:16px;margin-bottom:24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+  }
+  .login-panel input{
+    background:var(--bg);border:1px solid var(--border);border-radius:8px;
+    color:var(--text);font-size:14px;padding:10px 12px;outline:none;flex:1;min-width:160px;
+  }
+  .login-panel button{
+    background:var(--green);color:#0d1a12;border:none;border-radius:8px;
+    padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;
+  }
+  .login-msg{width:100%;font-size:12px;color:var(--red);}
+
+  .search{
+    display:flex;align-items:center;gap:10px;
+    background:var(--card);border:1px solid var(--border);
+    border-radius:10px;padding:12px 16px;margin-bottom:16px;
+  }
+  .search svg{flex-shrink:0;color:var(--text-faint);}
+  .search input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;}
+  .search input::placeholder{color:var(--text-faint);}
+
+  .add-panel{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:10px;padding:16px;margin-bottom:24px;
+    display:flex;gap:10px;flex-wrap:wrap;
+  }
+  .add-panel input{
+    background:var(--bg);border:1px solid var(--border);border-radius:8px;
+    color:var(--text);font-size:14px;padding:10px 12px;outline:none;
+  }
+  .add-panel input:focus{border-color:var(--green);}
+  .add-panel .title-input{flex:1;min-width:220px;}
+  .add-panel .link-input{flex:1;min-width:220px;}
+  .add-panel .date-input{width:150px;}
+  .add-panel button{
+    background:var(--green);color:#0d1a12;border:none;
+    border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;
+    cursor:pointer;white-space:nowrap;
+  }
+  .add-panel button:hover{opacity:.9;}
+
+  .status{font-size:12px;color:var(--text-faint);margin-bottom:12px;min-height:16px;}
+
+  .list{display:flex;flex-direction:column;gap:8px;margin-bottom:28px;}
+  .item{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:16px 18px;transition:background .15s;
+  }
+  .item:hover{background:var(--card-hover);}
+  .item-left{display:flex;align-items:flex-start;gap:10px;flex:1;min-width:0;}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);margin-top:6px;flex-shrink:0;}
+  .item-title{
+    color:var(--text);font-size:15px;line-height:1.5;word-break:break-word;
+    cursor:pointer;background:none;border:none;text-align:left;padding:0;font-family:inherit;
+  }
+  .item-title.linked:hover{color:var(--green);text-decoration:underline;}
+  .item-title:not(.linked){cursor:default;}
+  .item-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .item-date{color:var(--text-faint);font-size:13px;white-space:nowrap;}
+  .del-btn{
+    background:transparent;border:1px solid var(--border);color:var(--text-faint);
+    border-radius:6px;height:26px;padding:0 8px;font-size:12px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;white-space:nowrap;
+  }
+  .del-btn:hover{border-color:var(--red);color:var(--red);}
+  .del-btn.confirming{border-color:var(--red);color:#fff;background:var(--red);}
+
+  .empty{
+    text-align:center;color:var(--text-faint);font-size:14px;
+    padding:48px 20px;border:1px dashed var(--border);border-radius:10px;margin-bottom:28px;
+  }
+
+  .pagination{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:36px;}
+  .pagination button{
+    min-width:34px;height:34px;border-radius:8px;border:1px solid var(--border);
+    background:var(--card);color:var(--text-dim);font-size:14px;cursor:pointer;
+  }
+  .pagination button.active{background:var(--green);border-color:var(--green);color:#0d1a12;font-weight:700;}
+  .pagination button:disabled{opacity:.4;cursor:default;}
+
+  .footer{border-top:1px solid var(--border);padding-top:20px;font-size:12px;line-height:1.9;color:var(--text-faint);}
+  .footer p{margin:0;}
+  .footer .credit{margin-top:8px;color:var(--text-dim);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="breadcrumb">
+    <span>🌱 새순딜 › <span class="current">딜 아카이브</span></span>
+    <button class="admin-toggle" id="adminToggle">관리자</button>
+  </div>
+
+  <h1>딜 아카이브</h1>
+  <div class="subtitle" id="subtitle">지금까지 소개한 딜 0개 · 종료된 딜도 당시 기록을 보관해요</div>
+
+  <div class="login-panel" id="loginPanel" style="display:none;">
+    <input type="email" id="loginEmail" placeholder="관리자 이메일">
+    <input type="password" id="loginPassword" placeholder="비밀번호">
+    <button id="loginBtn">로그인</button>
+    <div class="login-msg" id="loginMsg"></div>
+  </div>
+
+  <div class="search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <input type="text" id="searchInput" placeholder="지난 딜 검색 — 예: 세제, 비타민, 삼겹살">
+  </div>
+
+  <div class="add-panel" id="addPanel" style="display:none;">
+    <input type="text" class="title-input" id="titleInput" placeholder="딜 제목 (예: 제스프리 썬 골드키위 1kg)">
+    <input type="url" class="link-input" id="linkInput" placeholder="링크 주소 (예: https://...)">
+    <input type="date" class="date-input" id="dateInput">
+    <button id="addBtn">등록</button>
+  </div>
+
+  <div class="status" id="status">데이터를 불러오지 못했어요: Could not find the table 'public.deals' in the schema cache</div>
+
+  <div id="listArea"><div class="empty">등록된 딜이 없어요.</div></div>
+
+  <div class="pagination" id="pagination"><button disabled="" data-page="0">‹</button><button class="active" data-page="1">1</button><button disabled="" data-page="2">›</button></div>
+
+  <div class="footer">
+    <p>가격은 실시간 변동될 수 있습니다. 네이버 최저가는 네이버 쇼핑 검색 API 기준.</p>
+    <p>이 포스팅은 도소매쇼핑 쉐어링크 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+    <p>이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+    <p class="credit">운영: 새순랩 (Saesun Lab) · 지난 딜 아카이브</p>
+  </div>
+
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+// ===== 여기 두 줄을 본인의 Supabase 프로젝트 값으로 바꿔주세요 =====
+const SUPABASE_URL = "https://aarlhyyezljnggexeixm.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_ziS91YPU_dkkzmFNS3sKyw_eeeWXpK7";
+// ================================================================
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let deals = [];
+let isAdmin = false;
+const PAGE_SIZE = 12;
+let currentPage = 1;
+
+// 이 이메일 계정으로 로그인했을 때만 관리자 권한을 부여합니다.
+// (Supabase Authentication에는 이 계정 하나만 등록해서 사용하세요)
+const ADMIN_EMAIL = "ineko1@naver.com";
+
+const listArea = document.getElementById("listArea");
+const pagination = document.getElementById("pagination");
+const subtitle = document.getElementById("subtitle");
+const statusEl = document.getElementById("status");
+const searchInput = document.getElementById("searchInput");
+const titleInput = document.getElementById("titleInput");
+const linkInput = document.getElementById("linkInput");
+const dateInput = document.getElementById("dateInput");
+const addBtn = document.getElementById("addBtn");
+const addPanel = document.getElementById("addPanel");
+const adminToggle = document.getElementById("adminToggle");
+const loginPanel = document.getElementById("loginPanel");
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+const loginBtn = document.getElementById("loginBtn");
+const loginMsg = document.getElementById("loginMsg");
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+dateInput.value = todayStr();
+
+function normalizeUrl(url){
+  if(!url) return "";
+  if(!/^https?:\/\//i.test(url)) return "https://" + url;
+  return url;
+}
+
+function escapeHtml(str){
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ---------- 관리자 로그인 (단일 계정만 허용) ----------
+adminToggle.addEventListener("click", () => {
+  if(isAdmin){
+    supabase.auth.signOut();
+  } else {
+    loginPanel.style.display = loginPanel.style.display === "none" ? "flex" : "none";
+  }
+});
+
+loginBtn.addEventListener("click", async () => {
+  loginMsg.textContent = "";
+  const email = loginEmail.value.trim();
+  if(email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()){
+    loginMsg.textContent = "관리자 계정이 아니에요.";
+    return;
+  }
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password: loginPassword.value
+  });
+  if(error){
+    loginMsg.textContent = "로그인에 실패했어요. 이메일/비밀번호를 확인해 주세요.";
+  } else {
+    loginPanel.style.display = "none";
+    loginEmail.value = "";
+    loginPassword.value = "";
+  }
+});
+
+supabase.auth.onAuthStateChange((_event, session) => {
+  // 로그인은 됐어도, 등록된 이메일이 관리자 계정과 일치할 때만 관리자 권한 부여
+  isAdmin = !!session && session.user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  adminToggle.textContent = isAdmin ? "관리자 (로그아웃)" : "관리자";
+  adminToggle.classList.toggle("on", isAdmin);
+  addPanel.style.display = isAdmin ? "flex" : "none";
+  render();
+});
+
+// ---------- 데이터 로드 ----------
+async function loadDeals(){
+  const { data, error } = await supabase
+    .from("deals")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if(error){
+    statusEl.textContent = "데이터를 불러오지 못했어요: " + error.message;
+    return;
+  }
+  deals = data || [];
+  render();
+}
+
+async function addDeal(){
+  const title = titleInput.value.trim();
+  const link = normalizeUrl(linkInput.value.trim());
+  const date = dateInput.value || todayStr();
+  if(!title){ titleInput.focus(); return; }
+
+  const { error } = await supabase.from("deals").insert([{ title, link, date }]);
+  if(error){
+    statusEl.textContent = "등록에 실패했어요: " + error.message;
+    return;
+  }
+  titleInput.value = "";
+  linkInput.value = "";
+  dateInput.value = todayStr();
+  currentPage = 1;
+  await loadDeals();
+}
+
+// 두 번 클릭으로 삭제 확인 (iframe 환경에서 confirm()이 막히는 문제를 피하기 위함)
+async function deleteDeal(id, btn){
+  if(btn.dataset.confirming !== "1"){
+    btn.dataset.confirming = "1";
+    btn.textContent = "한번 더 클릭";
+    btn.classList.add("confirming");
+    setTimeout(() => {
+      if(btn.dataset.confirming === "1"){
+        btn.dataset.confirming = "0";
+        btn.textContent = "삭제";
+        btn.classList.remove("confirming");
+      }
+    }, 3000);
+    return;
+  }
+  const { error } = await supabase.from("deals").delete().eq("id", id);
+  if(error){
+    statusEl.textContent = "삭제에 실패했어요: " + error.message;
+    return;
+  }
+  await loadDeals();
+}
+
+addBtn.addEventListener("click", addDeal);
+titleInput.addEventListener("keydown", e => { if(e.key === "Enter") addDeal(); });
+linkInput.addEventListener("keydown", e => { if(e.key === "Enter") addDeal(); });
+searchInput.addEventListener("input", () => { currentPage = 1; render(); });
+
+function render(){
+  const query = searchInput.value.trim().toLowerCase();
+  const filtered = query ? deals.filter(d => d.title.toLowerCase().includes(query)) : deals;
+
+  subtitle.textContent = `지금까지 소개한 딜 ${deals.length}개 · 종료된 딜도 당시 기록을 보관해요`;
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  if(currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+  if(filtered.length === 0){
+    listArea.innerHTML = `<div class="empty">${deals.length === 0
+      ? "등록된 딜이 없어요."
+      : "검색 결과가 없어요."}</div>`;
+  } else {
+    listArea.innerHTML = `<div class="list">${pageItems.map(d => `
+      <div class="item">
+        <div class="item-left">
+          <span class="dot"></span>
+          <button class="item-title ${d.link ? "linked" : ""}" data-link="${d.link ? escapeHtml(d.link) : ""}">${escapeHtml(d.title)}</button>
+        </div>
+        <div class="item-right">
+          <span class="item-date">${d.date}</span>
+          ${isAdmin ? `<button class="del-btn" data-id="${d.id}" data-confirming="0">삭제</button>` : ""}
+        </div>
+      </div>
+    `).join("")}</div>`;
+
+    listArea.querySelectorAll(".del-btn").forEach(btn => {
+      btn.addEventListener("click", () => deleteDeal(btn.dataset.id, btn));
+    });
+    listArea.querySelectorAll(".item-title.linked").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const url = btn.dataset.link;
+        if(url) window.open(url, "_blank", "noopener");
+      });
+    });
+  }
+
+  renderPagination(totalPages);
+}
+
+function renderPagination(totalPages){
+  let html = `<button ${currentPage===1?"disabled":""} data-page="${currentPage-1}">‹</button>`;
+  for(let p=1;p<=totalPages;p++){
+    html += `<button class="${p===currentPage?"active":""}" data-page="${p}">${p}</button>`;
+  }
+  html += `<button ${currentPage===totalPages?"disabled":""} data-page="${currentPage+1}">›</button>`;
+  pagination.innerHTML = html;
+  pagination.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const p = Number(btn.dataset.page);
+      if(p >= 1 && p <= totalPages){ currentPage = p; render(); }
+    });
+  });
+}
+
+loadDeals();
+</script>
+
+
+</body></html>
